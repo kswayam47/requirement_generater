@@ -1,0 +1,36 @@
+=== Software Requirements Specification ===
+
+1. Explicit Requirements
+=====================
+
+
+2. Gap Analysis
+=============
+
+
+3. Gap Resolution
+===============
+
+
+4. Requirement Clarifications
+==========================
+
+
+5. Known Requirements
+===================
+
+6. Requirement Gaps
+=================
+
+7. Detailed Requirements
+======================
+
+8. Selected Innovative Features
+============================
+
+No innovative features were selected.
+
+9. Requirements Prioritization (MoSCoW)
+===================================
+
+No prioritized requirements available.

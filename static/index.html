@@ -1,0 +1,1784 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Requirements Analyzer</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #4285F4;
+            --primary-dark: #3367D6;
+            --secondary-color: #34A853;
+            --secondary-dark: #2E7D32;
+            --accent-color: #FBBC05;
+            --accent-dark: #F9A825;
+            --danger-color: #EA4335;
+            --danger-dark: #C62828;
+            --text-color: #333333;
+            --text-light: #757575;
+            --bg-color: #FFFFFF;
+            --bg-light: #F5F5F5;
+            --bg-dark: #E0E0E0;
+            --border-color: #DDDDDD;
+            --border-radius: 8px;
+            --shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Roboto', Arial, sans-serif;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: var(--bg-light);
+        }
+
+        .app-header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .app-header h1 {
+            color: var(--primary-color);
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+
+        .app-header p {
+            color: var(--text-light);
+            font-size: 16px;
+        }
+
+        .card {
+            background: var(--bg-color);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            padding: 25px;
+            margin-bottom: 25px;
+            transition: var(--transition);
+        }
+
+        .card:hover {
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .card-header h2 {
+            font-size: 18px;
+            font-weight: 500;
+            color: var(--primary-color);
+        }
+
+        .card-header i {
+            color: var(--primary-color);
+            font-size: 20px;
+        }
+
+        #output {
+            white-space: pre-wrap;
+            background-color: var(--bg-light);
+            padding: 15px;
+            border-radius: var(--border-radius);
+            margin: 20px 0;
+            max-height: 400px;
+            overflow-y: auto;
+            border: 1px solid var(--border-color);
+            font-family: monospace;
+            font-size: 14px;
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 150px;
+            margin: 10px 0;
+            padding: 15px;
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            resize: vertical;
+            font-family: inherit;
+            font-size: 14px;
+            transition: var(--transition);
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(66, 133, 244, 0.2);
+        }
+
+        button {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        button:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-1px);
+        }
+
+        button:active {
+            transform: translateY(1px);
+        }
+
+        button i {
+            margin-right: 8px;
+        }
+
+        button:disabled {
+            background-color: var(--bg-dark);
+            color: var(--text-light);
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+        }
+
+        .btn-secondary {
+            background-color: var(--secondary-color);
+        }
+
+        .btn-secondary:hover {
+            background-color: var(--secondary-dark);
+        }
+
+        .btn-accent {
+            background-color: var(--accent-color);
+            color: var(--text-color);
+        }
+
+        .btn-accent:hover {
+            background-color: var(--accent-dark);
+        }
+
+        .btn-danger {
+            background-color: var(--danger-color);
+        }
+
+        .btn-danger:hover {
+            background-color: var(--danger-dark);
+        }
+
+        #downloadBtn {
+            display: none;
+            background-color: var(--primary-color);
+        }
+
+        #srsSection {
+            display: none;
+            margin-top: 20px;
+            padding: 20px;
+            background-color: #e8f5e9;
+            border-radius: var(--border-radius);
+            border: 1px solid #c8e6c9;
+        }
+
+        #proceedBtn {
+            background-color: var(--secondary-color);
+        }
+
+        #downloadSRSBtn {
+            display: none;
+            background-color: var(--primary-color);
+        }
+
+        #inputForm {
+            margin-top: 20px;
+            display: none;
+        }
+
+        .input-container {
+            margin-top: 10px;
+            background-color: var(--bg-color);
+            padding: 15px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+        }
+
+        .input-container p {
+            margin-bottom: 10px;
+            font-weight: 500;
+        }
+
+        .input-container input {
+            width: 100%;
+            padding: 10px 15px;
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            font-family: inherit;
+            margin-bottom: 10px;
+        }
+
+        .input-container input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        /* OCR Box Styles */
+        #ocrBox {
+            margin-top: 30px;
+            border: 2px dashed var(--border-color);
+            border-radius: var(--border-radius);
+            padding: 30px;
+            text-align: center;
+            background-color: var(--bg-color);
+            transition: var(--transition);
+        }
+
+        #ocrBox.highlight {
+            border-color: var(--primary-color);
+            background-color: rgba(66, 133, 244, 0.05);
+        }
+
+        #ocrBox h3 {
+            margin-top: 0;
+            color: var(--primary-color);
+            font-weight: 500;
+            margin-bottom: 10px;
+        }
+
+        #ocrBox p {
+            color: var(--text-light);
+            margin-bottom: 20px;
+        }
+
+        #ocrBox i.large-icon {
+            font-size: 48px;
+            color: var(--primary-color);
+            margin-bottom: 15px;
+            display: block;
+            opacity: 0.7;
+        }
+
+        #ocrFileInput {
+            display: none;
+        }
+
+        #ocrResult {
+            margin-top: 20px;
+            display: none;
+            background-color: var(--bg-color);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            padding: 20px;
+            box-shadow: var(--shadow);
+        }
+
+        #ocrBtns {
+            margin-top: 15px;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .file-type-badge {
+            display: inline-block;
+            padding: 5px 12px;
+            margin: 3px;
+            border-radius: 20px;
+            font-size: 12px;
+            background-color: rgba(66, 133, 244, 0.1);
+            color: var(--primary-color);
+            font-weight: 500;
+        }
+
+        /* Text comparison tabs */
+        .tab-container {
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        .tab-header {
+            display: flex;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: -1px;
+        }
+
+        .tab-btn {
+            padding: 12px 20px;
+            cursor: pointer;
+            background-color: var(--bg-light);
+            border: 1px solid var(--border-color);
+            border-bottom: none;
+            outline: none;
+            border-radius: 8px 8px 0 0;
+            margin-right: 2px;
+            font-weight: 500;
+            color: var(--text-light);
+            transition: var(--transition);
+        }
+
+        .tab-btn:hover {
+            background-color: var(--bg-color);
+            color: var(--primary-color);
+        }
+
+        .tab-btn.active {
+            background-color: var(--bg-color);
+            color: var(--primary-color);
+            border-bottom: 1px solid var(--bg-color);
+            position: relative;
+        }
+
+        .tab-btn.active::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background-color: var(--primary-color);
+        }
+
+        .tab-content {
+            padding: 20px;
+            border: 1px solid var(--border-color);
+            border-top: none;
+            border-radius: 0 0 var(--border-radius) var(--border-radius);
+            background-color: var(--bg-color);
+        }
+
+        pre.tab-text {
+            white-space: pre-wrap;
+            padding: 15px;
+            background-color: var(--bg-light);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            max-height: 300px;
+            overflow-y: auto;
+            font-family: monospace;
+            font-size: 14px;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            body {
+                padding: 15px;
+            }
+
+            .card {
+                padding: 20px;
+            }
+
+            .btn-group {
+                flex-direction: column;
+            }
+
+            .btn-group button {
+                width: 100%;
+            }
+
+            #ocrBtns {
+                flex-direction: column;
+            }
+
+            #ocrBtns button {
+                width: 100%;
+            }
+
+            .tab-btn {
+                padding: 10px;
+            }
+        }
+
+        /* Audio processing visualization */
+        .audio-visualizer {
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            height: 60px;
+            margin: 20px 0;
+        }
+        
+        .audio-visualizer .bar {
+            width: 8px;
+            background-color: var(--primary-color);
+            margin: 0 2px;
+            border-radius: 3px;
+            animation: audio-wave 0.8s infinite ease-in-out;
+        }
+        
+        .audio-visualizer .bar:nth-child(2n) {
+            animation-delay: 0.2s;
+        }
+        
+        .audio-visualizer .bar:nth-child(3n) {
+            animation-delay: 0.4s;
+        }
+        
+        .audio-visualizer .bar:nth-child(4n) {
+            animation-delay: 0.6s;
+        }
+        
+        @keyframes audio-wave {
+            0%, 100% { height: 15px; }
+            50% { height: 50px; }
+        }
+        
+        /* File type specific styles */
+        .file-icon-large {
+            font-size: 48px;
+            margin-bottom: 15px;
+            display: block;
+        }
+        
+        .excel-icon { color: #1D6F42; }
+        .audio-icon { color: #8E44AD; }
+        .minutes-icon { color: var(--secondary-color); }
+
+        .output-text {
+            white-space: pre-wrap;
+            background-color: var(--bg-light);
+            padding: 15px;
+            border-radius: var(--border-radius);
+            margin: 10px 0;
+            max-height: 400px;
+            overflow-y: auto;
+            border: 1px solid var(--border-color);
+            font-family: monospace;
+            font-size: 14px;
+            line-height: 1.5;
+            color: var(--text-color);
+        }
+    </style>
+</head>
+<body>
+    <div class="app-header">
+        <h1>Requirements Analyzer</h1>
+        <p>Extract, analyze, and transform requirements from various sources</p>
+    </div>
+    
+    <!-- OCR Requirement Generator Box (Moved to top) -->
+    <div id="ocrBox" class="card">
+        <div class="card-header">
+            <h2><i class="fas fa-file-import"></i> Document Extraction</h2>
+        </div>
+        <i class="fas fa-file-import large-icon"></i>
+        <h3>Extract Requirements from Documents</h3>
+        <p>Upload files, paste content, record speech, or extract from URLs to generate requirements automatically</p>
+        <div>
+            <span class="file-type-badge"><i class="fas fa-file-pdf"></i> PDF</span>
+            <span class="file-type-badge"><i class="fas fa-file-word"></i> Word</span>
+            <span class="file-type-badge"><i class="fas fa-file-image"></i> Images</span>
+            <span class="file-type-badge"><i class="fas fa-globe"></i> Web Page</span>
+            <span class="file-type-badge"><i class="fas fa-file-alt"></i> Text</span>
+            <span class="file-type-badge"><i class="fas fa-file-excel"></i> Excel</span>
+            <span class="file-type-badge"><i class="fas fa-file-audio"></i> Audio</span>
+            <span class="file-type-badge"><i class="fas fa-clipboard-list"></i> Minutes</span>
+        </div>
+        <input type="file" id="ocrFileInput" accept=".pdf,.doc,.docx,.png,.jpg,.jpeg,.gif,.txt,.html,.xlsx,.xls,.csv,.mp3,.wav,.ogg,.m4a,.aac">
+        <div id="ocrBtns">
+            <button onclick="document.getElementById('ocrFileInput').click()" class="btn-primary">
+                <i class="fas fa-upload"></i> Upload File
+            </button>
+            <button id="micBtn" class="btn-accent">
+                <i class="fas fa-microphone"></i> Speech Recognition
+            </button>
+            <button id="urlBtn" class="btn-primary">
+                <i class="fas fa-link"></i> Extract from URL
+            </button>
+            <button id="meetingBtn" class="btn-secondary">
+                <i class="fas fa-clipboard-list"></i> Meeting Minutes
+            </button>
+        </div>
+        <div id="ocrResult"></div>
+    </div>
+
+    <!-- Project Requirements Box (Moved second) -->
+    <div class="card">
+        <div class="card-header">
+            <h2><i class="fas fa-file-alt"></i> Project Requirements</h2>
+        </div>
+        <textarea id="description" placeholder="Enter your project description or requirements here..."></textarea>
+        <div class="btn-group">
+            <button id="analyzeBtn" class="btn-primary" onclick="startAnalysis()">
+                <i class="fas fa-cogs"></i> Analyze Requirements
+            </button>
+            <a id="downloadBtn" href="/download" download="requirements_answers.txt">
+                <button type="button" class="btn-primary">
+                    <i class="fas fa-download"></i> Download Requirements
+                </button>
+            </a>
+        </div>
+    </div>
+
+    <div id="srsSection" class="card">
+        <div class="card-header">
+            <h2><i class="fas fa-file-contract"></i> SRS Document Generator</h2>
+        </div>
+        <p>Review the initial requirements analysis and proceed to generate a complete SRS document.</p>
+        <div class="btn-group">
+            <button id="proceedBtn" class="btn-secondary" onclick="generateSRS()">
+                <i class="fas fa-play"></i> Generate SRS Document
+            </button>
+            <a id="downloadSRSBtn" href="/download_srs" download="system_srs.md">
+                <button type="button" class="btn-primary">
+                    <i class="fas fa-download"></i> Download SRS Document
+                </button>
+            </a>
+        </div>
+        <div id="extraFormats" style="display: none; margin-top: 20px;">
+            <h3>Additional Output Formats</h3>
+            <div class="btn-group" style="margin-top: 10px;">
+                <button id="wordBtn" class="btn-primary">
+                    <i class="fas fa-file-word"></i> Download as Word
+                </button>
+                <button id="pdfBtn" class="btn-primary">
+                    <i class="fas fa-file-pdf"></i> Download as PDF
+                </button>
+                <button id="jiraBtn" class="btn-accent">
+                    <i class="fas fa-tasks"></i> Process in Jira
+                </button>
+                <button id="excelBtn" class="btn-primary" style="display: none;">
+                    <i class="fas fa-file-excel"></i> Download Excel
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="output" class="card" style="display: none;">
+        <div class="card-header">
+            <h2><i class="fas fa-terminal"></i> Analysis Output</h2>
+        </div>
+        <pre id="outputContent" class="output-text"></pre>
+    </div>
+
+    <div id="inputForm">
+        <div class="input-container">
+            <p id="questionText"></p>
+            <input type="text" id="userInput" placeholder="Type your answer here...">
+            <button onclick="submitInput()" class="btn-secondary">
+                <i class="fas fa-paper-plane"></i> Submit
+            </button>
+        </div>
+    </div>
+
+    <script>
+        let ws;
+        const output = document.getElementById('output');
+        const analyzeBtn = document.getElementById('analyzeBtn');
+        const downloadBtn = document.getElementById('downloadBtn');
+        const srsSection = document.getElementById('srsSection');
+        const proceedBtn = document.getElementById('proceedBtn');
+        const downloadSRSBtn = document.getElementById('downloadSRSBtn');
+        const inputForm = document.getElementById('inputForm');
+        const questionText = document.getElementById('questionText');
+        const userInput = document.getElementById('userInput');
+        const outputContent = document.getElementById('outputContent');
+
+        function connect() {
+            ws = new WebSocket(`ws://${window.location.host}/ws`);
+            
+            ws.onmessage = function(event) {
+                const data = JSON.parse(event.data);
+                
+                if (data.type === 'output') {
+                    if (output.style.display === 'none') {
+                        output.style.display = 'block';
+                        // Scroll to output
+                        output.scrollIntoView({ behavior: 'smooth' });
+                    }
+                    outputContent.textContent += data.message + '\n';
+                    output.scrollTop = output.scrollHeight; // Auto-scroll to bottom
+                }
+                else if (data.type === 'question') {
+                    showInputForm(data.message);
+                    // Scroll to input form
+                    inputForm.scrollIntoView({ behavior: 'smooth' });
+                }
+                else if (data.type === 'file_ready') {
+                    if (data.message === 'requirements_answers.txt') {
+                        showDownloadButton();
+                        showSRSSection();
+                        // Show success notification
+                        showNotification('Requirements analysis completed!', 'success');
+                        // Scroll to the download button
+                        downloadBtn.scrollIntoView({ behavior: 'smooth' });
+                    } else if (data.message === 'system_srs.md') {
+                        showDownloadSRSButton();
+                        // Show success notification
+                        showNotification('SRS document generated successfully!', 'success');
+                        // Scroll to SRS download section
+                        downloadSRSBtn.scrollIntoView({ behavior: 'smooth' });
+                    }
+                }
+                else if (data.type === 'error') {
+                    if (output.style.display === 'none') {
+                        output.style.display = 'block';
+                    }
+                    outputContent.innerHTML += '<span style="color: var(--danger-color);">Error: ' + data.message + '</span>\n';
+                    output.scrollTop = output.scrollHeight; // Auto-scroll to bottom
+                    analyzeBtn.disabled = false;
+                    analyzeBtn.innerHTML = '<i class="fas fa-cogs"></i> Analyze Requirements';
+                    // Show error notification
+                    showNotification('An error occurred during analysis', 'error');
+                }
+            };
+
+            ws.onclose = function() {
+                output.textContent += '\nConnection closed. Reconnecting...\n';
+                output.scrollTop = output.scrollHeight; // Auto-scroll to bottom
+                setTimeout(connect, 1000);
+            };
+
+            ws.onerror = function(err) {
+                output.textContent += '\nWebSocket error: ' + err.message + '\n';
+                output.scrollTop = output.scrollHeight; // Auto-scroll to bottom
+                analyzeBtn.disabled = false;
+            };
+        }
+
+        function startAnalysis() {
+            const description = document.getElementById('description').value.trim();
+            if (!description) {
+                showNotification('Please enter a project description', 'warning');
+                return;
+            }
+
+            analyzeBtn.disabled = true;
+            analyzeBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Analyzing...';
+            downloadBtn.style.display = 'none';
+            srsSection.style.display = 'none';
+            downloadSRSBtn.style.display = 'none';
+            output.style.display = 'block';
+            outputContent.textContent = '';
+            
+            ws.send(JSON.stringify({
+                type: 'analyze',
+                description: description
+            }));
+
+            // Scroll to output
+            output.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function generateSRS() {
+            proceedBtn.disabled = true;
+            output.textContent = '';
+            
+            ws.send(JSON.stringify({
+                type: 'generate_srs'
+            }));
+        }
+
+        function showInputForm(question) {
+            questionText.textContent = question;
+            userInput.value = '';
+            inputForm.style.display = 'block';
+            userInput.focus();
+            // Ensure the input form is visible
+            inputForm.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function submitInput() {
+            const response = userInput.value.trim();
+            if (response) {
+                ws.send(JSON.stringify({
+                    type: 'input_response',
+                    value: response
+                }));
+                inputForm.style.display = 'none';
+                // After submitting, scroll back to output area
+                output.scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+
+        function showDownloadButton() {
+            downloadBtn.style.display = 'inline-block';
+        }
+
+        function showSRSSection() {
+            srsSection.style.display = 'block';
+            proceedBtn.disabled = false;
+        }
+
+        function showDownloadSRSButton() {
+            document.getElementById('downloadSRSBtn').style.display = 'inline-block';
+            document.getElementById('extraFormats').style.display = 'block';
+            
+            // Add event listeners for the new buttons
+            document.getElementById('wordBtn').addEventListener('click', () => {
+                const wordBtn = document.getElementById('wordBtn');
+                const originalText = wordBtn.innerHTML;
+                wordBtn.disabled = true;
+                wordBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Converting...';
+                
+                fetch('/convert_srs?format=word')
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            showNotification('Document converted to Word successfully!', 'success');
+                            window.location.href = '/download_srs?format=word';
+                        } else {
+                            showNotification('Error: ' + data.error, 'error');
+                        }
+                    })
+                    .catch(error => {
+                        showNotification('Error converting document: ' + error.message, 'error');
+                    })
+                    .finally(() => {
+                        wordBtn.disabled = false;
+                        wordBtn.innerHTML = originalText;
+                    });
+            });
+            
+            document.getElementById('pdfBtn').addEventListener('click', () => {
+                const pdfBtn = document.getElementById('pdfBtn');
+                const originalText = pdfBtn.innerHTML;
+                pdfBtn.disabled = true;
+                pdfBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Converting...';
+                
+                fetch('/convert_srs?format=pdf')
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            showNotification('Document converted to PDF successfully!', 'success');
+                            window.location.href = '/download_srs?format=pdf';
+                        } else {
+                            showNotification('Error: ' + data.error, 'error');
+                        }
+                    })
+                    .catch(error => {
+                        showNotification('Error converting document: ' + error.message, 'error');
+                    })
+                    .finally(() => {
+                        pdfBtn.disabled = false;
+                        pdfBtn.innerHTML = originalText;
+                    });
+            });
+            
+            document.getElementById('jiraBtn').addEventListener('click', () => {
+                document.getElementById('jiraBtn').disabled = true;
+                fetch('/create_jira_stories', { method: 'POST' })
+                    .then(response => response.json())
+                    .then(data => {
+                        if(data.success) {
+                            alert('Successfully created JIRA stories!');
+                            document.getElementById('excelBtn').style.display = 'inline-block';
+                        } else {
+                            alert('Error: ' + data.error);
+                        }
+                        document.getElementById('jiraBtn').disabled = false;
+                    })
+                    .catch(err => {
+                        alert('Error: ' + err);
+                        document.getElementById('jiraBtn').disabled = false;
+                    });
+            });
+            
+            document.getElementById('excelBtn').addEventListener('click', () => {
+                window.location.href = '/download_excel';
+            });
+        }
+
+        // Handle Enter key in input field
+        userInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                submitInput();
+            }
+        });
+
+        // Initial connection
+        connect();
+
+        // Check for required dependencies 
+        checkDependencies();
+
+        // Add paste event handler to the textarea to detect and fix excessive newlines
+        document.getElementById('description').addEventListener('paste', handleTextPaste);
+
+        // OCR Requirement Generator functionality
+        const ocrBox = document.getElementById('ocrBox');
+        const ocrFileInput = document.getElementById('ocrFileInput');
+        const ocrResult = document.getElementById('ocrResult');
+        const micBtn = document.getElementById('micBtn');
+        const urlBtn = document.getElementById('urlBtn');
+        
+        // Drag and drop functionality
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            ocrBox.addEventListener(eventName, preventDefaults, false);
+        });
+        
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+        
+        ['dragenter', 'dragover'].forEach(eventName => {
+            ocrBox.addEventListener(eventName, highlight, false);
+        });
+        
+        ['dragleave', 'drop'].forEach(eventName => {
+            ocrBox.addEventListener(eventName, unhighlight, false);
+        });
+        
+        function highlight() {
+            ocrBox.classList.add('highlight');
+        }
+        
+        function unhighlight() {
+            ocrBox.classList.remove('highlight');
+        }
+        
+        ocrBox.addEventListener('drop', handleDrop, false);
+        
+        function handleDrop(e) {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            if (files.length) {
+                handleFiles(files);
+            } else if (dt.getData('text/html') || dt.getData('text/plain')) {
+                // Handle dropped text or HTML
+                let content = dt.getData('text/html') || dt.getData('text/plain');
+                processContent(content, 'text');
+            }
+        }
+        
+        // File input change handler
+        ocrFileInput.addEventListener('change', function() {
+            if (this.files.length) {
+                handleFiles(this.files);
+            }
+        });
+        
+        function handleFiles(files) {
+            const file = files[0]; // Process only the first file for simplicity
+            
+            // Show loading state
+            ocrResult.innerHTML = '<p>Processing file...</p>';
+            ocrResult.style.display = 'block';
+            
+            // Check file type
+            const fileType = file.type.toLowerCase();
+            const fileName = file.name.toLowerCase();
+            
+            if (fileName.endsWith('.xlsx') || fileName.endsWith('.xls') || 
+                fileType === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' ||
+                fileType === 'application/vnd.ms-excel') {
+                // Process Excel file
+                processExcelFile(file);
+            } else {
+                // Handle other file types
+                const formData = new FormData();
+                formData.append('file', file);
+                
+                fetch('/extract_text', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! Status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.success) {
+                        processExtractedText(data.text, file.name, data.analyzed_text);
+                    } else {
+                        ocrResult.innerHTML = `<p>Error: ${data.error}</p>`;
+                    }
+                })
+                .catch(error => {
+                    ocrResult.innerHTML = `<p>Error: ${error.message}</p>`;
+                    console.error('Error:', error);
+                });
+            }
+        }
+        
+        function processContent(content, type) {
+            ocrResult.innerHTML = '<p>Processing content...</p>';
+            ocrResult.style.display = 'block';
+            
+            fetch('/process_content', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ content, type })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    processExtractedText(data.text, 'Content', data.analyzed_text);
+                } else {
+                    ocrResult.innerHTML = `<p>Error: ${data.error}</p>`;
+                }
+            })
+            .catch(error => {
+                ocrResult.innerHTML = `<p>Error: ${error.message}</p>`;
+                console.error('Error:', error);
+            });
+        }
+        
+        function processExtractedText(text, source, analyzedText = null) {
+            // Ensure text is properly escaped for HTML display
+            const escapeHtml = (str) => {
+                return str
+                    .replace(/&/g, '&amp;')
+                    .replace(/</g, '&lt;')
+                    .replace(/>/g, '&gt;')
+                    .replace(/"/g, '&quot;')
+                    .replace(/'/g, '&#039;');
+            };
+            
+            // Normalize text - handle excessive newlines and clean up formatting
+            const normalizeText = (str) => {
+                if (!str) return '';
+                
+                // First normalize newlines
+                str = str.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+                
+                // Check if text has excessive newlines (one word per line pattern)
+                const lines = str.split('\n');
+                const hasExcessiveNewlines = lines.length > 10 && 
+                                            lines.filter(line => line.trim().split(/\s+/).length <= 2).length > lines.length * 0.7;
+                
+                if (hasExcessiveNewlines) {
+                    // Join words with spaces, preserving paragraph breaks (2+ newlines)
+                    str = str.replace(/\n{3,}/g, '\n\n')  // Normalize paragraph breaks first
+                             .replace(/\n\s*\n/g, '\n\n') // Standardize paragraph breaks
+                             .replace(/\n(?!\n)/g, ' ')   // Replace single newlines with spaces
+                             .replace(/\s{2,}/g, ' ');    // Remove extra spaces
+                }
+                
+                return escapeHtml(str);
+            };
+            
+            // Create the tab container
+            let tabContent = `
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                    <h4 style="margin: 0;">Extracted from: ${escapeHtml(source)}</h4>
+                    <div>
+                        <button onclick="useExtractedText('original')" style="background-color: #ff9800;">Use Original Text</button>
+                        <button onclick="useExtractedText('analyzed')" style="background-color: #2196F3;">Use Analyzed Requirements</button>
+                    </div>
+                </div>
+                <div class="tab-container">
+                    <div class="tab-header">
+                        <button class="tab-btn active" onclick="switchTab(this, 'original-tab')">Original Text</button>
+                        <button class="tab-btn" onclick="switchTab(this, 'analyzed-tab')">Analyzed Requirements</button>
+                    </div>
+                    <div class="tab-content">
+                        <div id="original-tab" style="display: block;">
+                            <pre class="tab-text">${normalizeText(text)}</pre>
+                        </div>
+                        <div id="analyzed-tab" style="display: none;">
+                            <pre class="tab-text">${analyzedText ? normalizeText(analyzedText) : 'Analysis loading...'}</pre>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            ocrResult.innerHTML = tabContent;
+            
+            // Store both the extracted text and analyzed requirements for later use
+            window.extractedText = text;
+            window.analyzedText = analyzedText;
+            
+            // If analyzedText is not provided, attempt to get it
+            if (!analyzedText && text) {
+                fetch('/analyze_requirements', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ text: text })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Update the analyzed tab with the response
+                        document.querySelector('#analyzed-tab pre').innerHTML = normalizeText(data.analyzed_text);
+                        window.analyzedText = data.analyzed_text;
+                    } else {
+                        document.querySelector('#analyzed-tab pre').textContent = 'Analysis failed: ' + data.error;
+                    }
+                })
+                .catch(error => {
+                    document.querySelector('#analyzed-tab pre').textContent = 'Error performing analysis: ' + error.message;
+                });
+            }
+        }
+        
+        function switchTab(button, tabId) {
+            // Update button states
+            const tabButtons = document.querySelectorAll('.tab-btn');
+            tabButtons.forEach(btn => btn.classList.remove('active'));
+            button.classList.add('active');
+            
+            // Hide all tab contents and show the selected one
+            const tabContents = document.querySelectorAll('.tab-content > div');
+            tabContents.forEach(tab => tab.style.display = 'none');
+            document.getElementById(tabId).style.display = 'block';
+        }
+        
+        function useExtractedText(type = 'original') {
+            const textToUse = type === 'original' ? window.extractedText : window.analyzedText;
+            if (textToUse) {
+                document.getElementById('description').value = textToUse;
+                alert(`${type.charAt(0).toUpperCase() + type.slice(1)} text has been added to the requirements input!`);
+            }
+        }
+        
+        // Speech recognition
+        micBtn.addEventListener('click', startSpeechRecognition);
+        
+        function startSpeechRecognition() {
+            if (!('webkitSpeechRecognition' in window)) {
+                alert('Your browser does not support speech recognition. Please try Chrome.');
+                return;
+            }
+            
+            const recognition = new webkitSpeechRecognition();
+            recognition.continuous = true;
+            recognition.interimResults = true;
+            recognition.lang = 'en-US';
+            
+            let finalTranscript = '';
+            
+            recognition.onstart = function() {
+                micBtn.style.backgroundColor = '#f44336';
+                micBtn.textContent = 'Listening... (Click to Stop)';
+                micBtn.onclick = function() {
+                    recognition.stop();
+                };
+                
+                ocrResult.innerHTML = '<p>Listening... speak clearly into your microphone.</p>';
+                ocrResult.style.display = 'block';
+            };
+            
+            recognition.onresult = function(event) {
+                let interimTranscript = '';
+                
+                for (let i = event.resultIndex; i < event.results.length; ++i) {
+                    if (event.results[i].isFinal) {
+                        finalTranscript += event.results[i][0].transcript;
+                    } else {
+                        interimTranscript += event.results[i][0].transcript;
+                    }
+                }
+                
+                ocrResult.innerHTML = `
+                    <p>Transcribing...</p>
+                    <div style="font-weight: bold;">${finalTranscript}</div>
+                    <div style="color: gray; font-style: italic;">${interimTranscript}</div>
+                `;
+            };
+            
+            recognition.onerror = function(event) {
+                ocrResult.innerHTML = `<p>Error: ${event.error}</p>`;
+                resetMicButton();
+            };
+            
+            recognition.onend = function() {
+                resetMicButton();
+                
+                if (finalTranscript) {
+                    processExtractedText(finalTranscript, 'Speech Recognition');
+                } else {
+                    ocrResult.innerHTML = '<p>No speech was detected. Please try again.</p>';
+                }
+            };
+            
+            recognition.start();
+        }
+        
+        function resetMicButton() {
+            micBtn.style.backgroundColor = '#9c27b0';
+            micBtn.textContent = 'Speech Recognition';
+            micBtn.onclick = startSpeechRecognition;
+        }
+        
+        // URL extraction
+        urlBtn.addEventListener('click', function() {
+            const url = prompt('Enter URL to extract content from:');
+            if (url) {
+                ocrResult.innerHTML = '<p>Extracting content from URL...</p>';
+                ocrResult.style.display = 'block';
+                
+                fetch('/extract_from_url', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ url })
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! Status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.success) {
+                        processExtractedText(data.text, url, data.analyzed_text);
+                    } else {
+                        ocrResult.innerHTML = `<p>Error: ${data.error}</p>`;
+                    }
+                })
+                .catch(error => {
+                    ocrResult.innerHTML = `<p>Error: ${error.message}</p>`;
+                });
+            }
+        });
+
+        function processPdfFile(file, pdfjsLib) {
+            const reader = new FileReader();
+            
+            reader.onload = function(e) {
+                const typedArray = new Uint8Array(e.target.result);
+                
+                pdfjsLib.getDocument({ data: typedArray }).promise
+                    .then(function(pdf) {
+                        showNotification('PDF loaded, extracting text...', 'info');
+                        
+                        const totalPages = pdf.numPages;
+                        let extractedText = `File: ${file.name}\nPages: ${totalPages}\n\n`;
+                        const pagePromises = [];
+                        
+                        for (let i = 1; i <= totalPages; i++) {
+                            pagePromises.push(
+                                pdf.getPage(i).then(function(page) {
+                                    return page.getTextContent().then(function(textContent) {
+                                        // Group text items by their y-coordinate to identify lines
+                                        const lines = {};
+                                        textContent.items.forEach(item => {
+                                            const y = Math.round(item.transform[5]); // y-coordinate
+                                            if (!lines[y]) {
+                                                lines[y] = [];
+                                            }
+                                            lines[y].push(item);
+                                        });
+
+                                        // Sort lines by y-coordinate (top to bottom) and combine words
+                                        const sortedLines = Object.keys(lines)
+                                            .sort((a, b) => b - a) // Reverse sort for top-to-bottom
+                                            .map(y => {
+                                                // Sort items within each line by x-coordinate (left to right)
+                                                return lines[y]
+                                                    .sort((a, b) => a.transform[4] - b.transform[4])
+                                                    .map(item => item.str)
+                                                    .join(' ');
+                                            });
+
+                                        return {
+                                            pageNum: i,
+                                            text: sortedLines.join('\n')
+                                        };
+                                    });
+                                })
+                            );
+                        }
+                        
+                        Promise.all(pagePromises)
+                            .then(function(pages) {
+                                pages.sort((a, b) => a.pageNum - b.pageNum);
+                                pages.forEach(page => {
+                                    extractedText += `--- Page ${page.pageNum} ---\n\n${page.text}\n\n`;
+                                });
+                                
+                                const analyzedText = "# Summary of Requirements\n\n" + 
+                                    "The following requirements were extracted directly from the document content. " +
+                                    "This summary only includes points mentioned in the original text:\n\n" +
+                                    analyzeRequirementsFromText(extractedText);
+                                
+                                processExtractedText(extractedText, file.name, analyzedText);
+                                showNotification('PDF processed successfully!', 'success');
+                            })
+                            .catch(function(error) {
+                                handlePdfError(error);
+                            });
+                    })
+                    .catch(function(error) {
+                        handlePdfError(error);
+                    });
+            };
+            
+            reader.onerror = function() {
+                ocrResult.innerHTML = `
+                    <div style="color: var(--danger-color); text-align: center; padding: 20px;">
+                        <i class="fas fa-exclamation-circle" style="font-size: 24px;"></i>
+                        <p style="margin-top: 10px;">Error reading PDF file: ${file.name}</p>
+                    </div>
+                `;
+                showNotification('Error reading PDF file', 'error');
+            };
+            
+            reader.readAsArrayBuffer(file);
+        }
+
+        // Fix Excel processing function
+        function processExcelFile(file) {
+            // First check if SheetJS is loaded
+            if (typeof XLSX === 'undefined') {
+                // Load SheetJS library if not already loaded
+                const script = document.createElement('script');
+                script.src = 'https://cdn.sheetjs.com/xlsx-0.19.3/package/dist/xlsx.full.min.js';
+                script.onload = function() {
+                    actuallyProcessExcel(file);
+                };
+                script.onerror = function() {
+                    ocrResult.innerHTML = `
+                        <div style="color: var(--danger-color); text-align: center; padding: 20px;">
+                            <i class="fas fa-exclamation-circle" style="font-size: 24px;"></i>
+                            <p style="margin-top: 10px;">Error loading Excel processing library. Please try again.</p>
+                        </div>
+                    `;
+                    showNotification('Error loading Excel library', 'error');
+                };
+                document.head.appendChild(script);
+                return;
+            } else {
+                actuallyProcessExcel(file);
+            }
+        }
+
+        function actuallyProcessExcel(file) {
+            const reader = new FileReader();
+            
+            // Show loading state
+            ocrResult.innerHTML = `
+                <div style="text-align: center; padding: 20px;">
+                    <i class="fas fa-file-excel file-icon-large excel-icon"></i>
+                    <h4 style="margin-bottom: 15px;">Processing Excel File</h4>
+                    <p>Processing "${file.name}"...</p>
+                    <div style="margin: 20px 0;">
+                        <i class="fas fa-spinner fa-spin" style="font-size: 24px; color: var(--primary-color);"></i>
+                    </div>
+                </div>
+            `;
+            ocrResult.style.display = 'block';
+            
+            reader.onload = function(e) {
+                try {
+                    const data = new Uint8Array(e.target.result);
+                    let workbook;
+                    
+                    try {
+                        // Try to read as array buffer first (most reliable method)
+                        workbook = XLSX.read(data, {
+                            type: 'array',
+                            cellDates: true,
+                            cellNF: false,
+                            cellText: true,
+                            WTF: true,
+                            codepage: 65001, // UTF-8
+                            raw: false
+                        });
+                    } catch (err) {
+                        console.warn('Array buffer read failed, trying binary string:', err);
+                        // Fallback to binary string if array buffer fails
+                        const bstr = new TextDecoder('utf-8').decode(data);
+                        workbook = XLSX.read(bstr, {
+                            type: 'string',
+                            cellDates: true,
+                            cellNF: false,
+                            cellText: true,
+                            WTF: true,
+                            codepage: 65001
+                        });
+                    }
+
+                    if (!workbook || !workbook.SheetNames || workbook.SheetNames.length === 0) {
+                        throw new Error('No sheets found in the Excel file');
+                    }
+
+                    // Extract text from all sheets
+                    let extractedText = `File: ${file.name}\n\n`;
+                    let analyzedText = '# Extracted Requirements\n\n';
+                    let hasContent = false;
+
+                    workbook.SheetNames.forEach(sheetName => {
+                        const worksheet = workbook.Sheets[sheetName];
+                        if (!worksheet) return;
+
+                        extractedText += `Sheet: ${sheetName}\n`;
+                        extractedText += '----------------------------------------\n';
+
+                        // Get the range of the sheet - handle missing ref
+                        let range;
+                        try {
+                            range = XLSX.utils.decode_range(worksheet['!ref'] || 'A1');
+                        } catch (err) {
+                            console.warn(`Error decoding range for sheet ${sheetName}:`, err);
+                            extractedText += 'Empty or unreadable sheet\n\n';
+                            return; // Skip this sheet and continue with others
+                        }
+                        
+                        // Try different methods to extract data for maximum compatibility
+                        let rows = [];
+                        
+                        try {
+                            // Method 1: Convert to JSON with header row option
+                            rows = XLSX.utils.sheet_to_json(worksheet, {
+                                header: 1,
+                                raw: false,
+                                dateNF: 'YYYY-MM-DD',
+                                defval: '',
+                                blankrows: false
+                            });
+                        } catch (err) {
+                            console.warn(`Error converting sheet ${sheetName} to JSON:`, err);
+                            
+                            try {
+                                // Method 2: Manual cell extraction
+                                rows = [];
+                                const range = XLSX.utils.decode_range(worksheet['!ref'] || 'A1');
+                                
+                                for (let r = range.s.r; r <= range.e.r; ++r) {
+                                    const row = [];
+                                    for (let c = range.s.c; c <= range.e.c; ++c) {
+                                        const cell_address = XLSX.utils.encode_cell({r: r, c: c});
+                                        const cell = worksheet[cell_address];
+                                        row.push(cell ? XLSX.utils.format_cell(cell) : '');
+                                    }
+                                    rows.push(row);
+                                }
+                            } catch (err2) {
+                                console.error(`Both methods failed for sheet ${sheetName}:`, err2);
+                                extractedText += 'Error extracting data from this sheet\n\n';
+                                return; // Skip this sheet and continue with others
+                            }
+                        }
+
+                        if (rows && rows.length > 0) {
+                            hasContent = true;
+                            const headers = rows[0] || [];
+                            
+                            // Process each row
+                            rows.forEach((row, rowIndex) => {
+                                if (!row || row.length === 0) return;
+                                
+                                // For data rows
+                                if (rowIndex > 0) {
+                                    let rowText = '';
+                                    row.forEach((cell, colIndex) => {
+                                        if (cell !== null && cell !== undefined && cell !== '') {
+                                            const header = headers[colIndex] || `Column ${colIndex + 1}`;
+                                            rowText += `${header}: ${cell}\n`;
+                                            
+                                            // Check for requirement-related content
+                                            const headerLower = String(header).toLowerCase();
+                                            const cellText = String(cell);
+                                            if (headerLower.includes('requirement') ||
+                                                headerLower.includes('feature') ||
+                                                headerLower.includes('description') ||
+                                                headerLower.includes('story') ||
+                                                headerLower.includes('task') ||
+                                                headerLower.includes('function') ||
+                                                headerLower.includes('epic') ||
+                                                headerLower.includes('user') ||
+                                                headerLower.includes('test case')) {
+                                                analyzedText += `- **${header}**: ${cellText}\n`;
+                                            }
+                                            
+                                            // Look for requirements in the cell text itself
+                                            if (cellText.length > 10) {
+                                                if (cellText.toLowerCase().includes('shall') ||
+                                                    cellText.toLowerCase().includes('must') ||
+                                                    cellText.toLowerCase().includes('should') ||
+                                                    cellText.toLowerCase().includes('will') ||
+                                                    cellText.match(/req[:\-_\s][0-9]+/i)) {
+                                                    analyzedText += `- **From ${header}**: ${cellText}\n`;
+                                                }
+                                            }
+                                        }
+                                    });
+                                    if (rowText) {
+                                        extractedText += rowText + '\n';
+                                    }
+                                } else {
+                                    // For header row
+                                    extractedText += row.join('\t') + '\n';
+                                    extractedText += '-'.repeat(40) + '\n';
+                                }
+                            });
+                            extractedText += '\n';
+                        } else {
+                            extractedText += 'No data found in this sheet\n\n';
+                        }
+                    });
+
+                    if (!hasContent) {
+                        throw new Error('No data found in any sheet of the Excel file');
+                    }
+
+                    if (analyzedText === '# Extracted Requirements\n\n') {
+                        analyzedText += 'No specific requirements found in the Excel file.\n\n';
+                        analyzedText += 'Raw Data:\n\n' + extractedText;
+                    }
+
+                    // Process the extracted text
+                    processExtractedText(extractedText, file.name, analyzedText);
+                } catch (error) {
+                    console.error('Excel processing error:', error);
+                    ocrResult.innerHTML = `
+                        <div style="color: var(--danger-color); text-align: center; padding: 20px;">
+                            <i class="fas fa-exclamation-circle" style="font-size: 24px;"></i>
+                            <p style="margin-top: 10px;">Error processing Excel file: ${error.message}</p>
+                            <p style="margin-top: 10px; font-size: 14px;">Please make sure the file is a valid Excel file.</p>
+                        </div>
+                    `;
+                    showNotification('Error processing Excel file', 'error');
+                }
+            };
+            
+            reader.onerror = function(error) {
+                console.error('FileReader error:', error);
+                ocrResult.innerHTML = `
+                    <div style="color: var(--danger-color); text-align: center; padding: 20px;">
+                        <i class="fas fa-exclamation-circle" style="font-size: 24px;"></i>
+                        <p style="margin-top: 10px;">Error reading file: ${file.name}</p>
+                        <p style="margin-top: 10px; font-size: 14px;">${error.message || 'Please try again with a different file.'}</p>
+                    </div>
+                `;
+                showNotification('Error reading Excel file', 'error');
+            };
+            
+            // Read as ArrayBuffer for better compatibility
+            reader.readAsArrayBuffer(file);
+        }
+
+        // Add Meeting Minutes functionality
+        function showMeetingMinutesForm() {
+            const formHtml = `
+                <div style="text-align: left; padding: 20px;">
+                    <h4 style="margin-bottom: 15px; color: var(--primary-color);"><i class="fas fa-clipboard-list"></i> Meeting Minutes Extractor</h4>
+                    <p style="margin-bottom: 15px;">Enter meeting details to extract requirements:</p>
+                    
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: block; margin-bottom: 5px; font-weight: 500;">Meeting Title</label>
+                        <input type="text" id="meetingTitle" placeholder="e.g., Sprint Planning Meeting" 
+                               style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: var(--border-radius);">
+                    </div>
+                    
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: block; margin-bottom: 5px; font-weight: 500;">Date</label>
+                        <input type="date" id="meetingDate" 
+                               style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: var(--border-radius);">
+                    </div>
+                    
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: block; margin-bottom: 5px; font-weight: 500;">Participants</label>
+                        <input type="text" id="meetingParticipants" placeholder="e.g., John, Sarah, Michael" 
+                               style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: var(--border-radius);">
+                    </div>
+                    
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: block; margin-bottom: 5px; font-weight: 500;">Meeting Notes</label>
+                        <textarea id="meetingNotes" placeholder="Paste your meeting notes here..." 
+                                  style="width: 100%; min-height: 150px; padding: 10px; border: 1px solid var(--border-color); border-radius: var(--border-radius);"></textarea>
+                    </div>
+                    
+                    <div class="btn-group">
+                        <button onclick="processMeetingMinutes()" class="btn-primary">
+                            <i class="fas fa-magic"></i> Extract Requirements
+                        </button>
+                        <button onclick="cancelMeetingMinutes()" class="btn-accent">
+                            <i class="fas fa-times"></i> Cancel
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            ocrResult.innerHTML = formHtml;
+            ocrResult.style.display = 'block';
+            
+            // Set default date to today
+            document.getElementById('meetingDate').valueAsDate = new Date();
+            
+            // Focus on first field
+            document.getElementById('meetingTitle').focus();
+            
+            // Add paste handler for meeting notes textarea
+            document.getElementById('meetingNotes').addEventListener('paste', handleTextPaste);
+            
+            // Scroll to the form
+            ocrResult.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Function to handle pasted text with excessive line breaks
+        function handleTextPaste(e) {
+            // Wait a short moment for the paste to complete
+            setTimeout(() => {
+                const text = this.value;
+                if (text) {
+                    // Check if the pasted text has excessive newlines
+                    const lines = text.split('\n');
+                    const hasExcessiveNewlines = lines.length > 10 && 
+                        lines.filter(line => line.trim().split(/\s+/).length <= 2).length > lines.length * 0.7;
+                    
+                    if (hasExcessiveNewlines) {
+                        // Show notice to user
+                        showNotification('Fixing line breaks in pasted text...', 'info');
+                        
+                        // Send to backend for normalization
+                        fetch('/normalize_text', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({ text: text })
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                // Update the textarea with normalized text
+                                this.value = data.text;
+                                showNotification('Text formatting has been fixed', 'success');
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error normalizing text:', error);
+                        });
+                    }
+                }
+            }, 100);
+        }
+
+        function processMeetingMinutes() {
+            const title = document.getElementById('meetingTitle').value.trim();
+            const date = document.getElementById('meetingDate').value;
+            const participants = document.getElementById('meetingParticipants').value.trim();
+            const notes = document.getElementById('meetingNotes').value.trim();
+            
+            if (!notes) {
+                showNotification('Please enter meeting notes', 'warning');
+                return;
+            }
+            
+            // Format meeting data
+            const formattedNotes = `
+Meeting: ${title || 'Untitled Meeting'}
+Date: ${date || new Date().toISOString().split('T')[0]}
+Participants: ${participants || 'Not specified'}
+
+Notes:
+${notes}
+            `.trim();
+
+            // Process the notes
+            processExtractedText(formattedNotes, 'Meeting Minutes', analyzeRequirementsFromText(formattedNotes));
+            showNotification('Meeting notes processed successfully!', 'success');
+        }
+
+        function cancelMeetingMinutes() {
+            ocrResult.innerHTML = '';
+            ocrResult.style.display = 'none';
+            showNotification('Meeting minutes extraction cancelled', 'info');
+        }
+        // Add event listener for meeting minutes button
+        document.getElementById('meetingBtn').addEventListener('click', showMeetingMinutesForm);
+
+        // Add this before any other JavaScript code
+        function showNotification(message, type = 'info') {
+            // Create notification container if it doesn't exist
+            let container = document.getElementById('notification-container');
+            if (!container) {
+                container = document.createElement('div');
+                container.id = 'notification-container';
+                container.style.cssText = `
+                    position: fixed;
+                    top: 20px;
+                    right: 20px;
+                    z-index: 9999;
+                `;
+                document.body.appendChild(container);
+            }
+
+            // Create notification element
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                padding: 12px 24px;
+                margin-bottom: 10px;
+                border-radius: 4px;
+                color: white;
+                font-weight: 500;
+                box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+                animation: slideIn 0.3s ease-out;
+                cursor: pointer;
+            `;
+
+            // Set background color based on type
+            switch (type) {
+                case 'success':
+                    notification.style.backgroundColor = 'var(--secondary-color, #34A853)';
+                    break;
+                case 'error':
+                    notification.style.backgroundColor = 'var(--danger-color, #EA4335)';
+                    break;
+                case 'warning':
+                    notification.style.backgroundColor = 'var(--accent-color, #FBBC05)';
+                    break;
+                default:
+                    notification.style.backgroundColor = 'var(--primary-color, #4285F4)';
+            }
+
+            // Add message and icon
+            let icon = '';
+            switch (type) {
+                case 'success':
+                    icon = '✓';
+                    break;
+                case 'error':
+                    icon = '✕';
+                    break;
+                case 'warning':
+                    icon = '⚠';
+                    break;
+                default:
+                    icon = 'ℹ';
+            }
+            notification.innerHTML = `${icon} ${message}`;
+
+            // Add click to dismiss
+            notification.onclick = () => notification.remove();
+
+            // Auto-dismiss after 5 seconds
+            setTimeout(() => {
+                notification.style.animation = 'slideOut 0.3s ease-out';
+                setTimeout(() => notification.remove(), 300);
+            }, 5000);
+
+            // Add to container
+            container.appendChild(notification);
+        }
+
+        // Add CSS animation styles
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideIn {
+                from { transform: translateX(100%); opacity: 0; }
+                to { transform: translateX(0); opacity: 1; }
+            }
+            @keyframes slideOut {
+                from { transform: translateX(0); opacity: 1; }
+                to { transform: translateX(100%); opacity: 0; }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // Function to manually fix text formatting
+        function fixTextFormatting() {
+            const textarea = document.getElementById('description');
+            const text = textarea.value;
+            
+            if (!text.trim()) {
+                showNotification('No text to format', 'warning');
+                return;
+            }
+            
+            showNotification('Fixing text formatting...', 'info');
+            
+            fetch('/normalize_text', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ text: text })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    textarea.value = data.text;
+                    showNotification('Text formatting has been fixed', 'success');
+                } else {
+                    showNotification('Error: ' + data.error, 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error normalizing text:', error);
+                showNotification('Error processing text', 'error');
+            });
+        }
+
+        // Function to check for required dependencies (pandoc, etc.)
+        function checkDependencies() {
+            // Check for Pandoc (needed for Word/PDF export)
+            fetch('/check_pandoc')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        if (!data.installed) {
+                            // Display warning about missing Pandoc
+                            console.log('Pandoc is not installed. PDF and Word export features will not work.');
+                            
+                            // Create a warning that will be shown when SRS section is displayed
+                            const warningDiv = document.createElement('div');
+                            warningDiv.id = 'pandoc-warning';
+                            warningDiv.style.display = 'none';
+                            warningDiv.innerHTML = `
+                                <div style="background-color: #fff3cd; color: #856404; padding: 10px; 
+                                            border: 1px solid #ffeeba; border-radius: var(--border-radius); margin-top: 15px;">
+                                    <p><strong>Pandoc Not Installed:</strong> The "Download as Word" and "Download as PDF" features 
+                                    require Pandoc to be installed on the server.</p>
+                                    <p>Installation Instructions:</p>
+                                    <ul style="margin-left: 20px;">
+                                        <li><strong>Windows:</strong> ${data.installation_instructions.windows}</li>
+                                        <li><strong>macOS:</strong> ${data.installation_instructions.macos}</li>
+                                        <li><strong>Linux:</strong> ${data.installation_instructions.linux}</li>
+                                    </ul>
+                                </div>
+                            `;
+                            
+                            // Add after the buttons
+                            const extraFormats = document.getElementById('extraFormats');
+                            extraFormats.appendChild(warningDiv);
+                            
+                            // Update the original show function
+                            const originalShowSRSSection = showSRSSection;
+                            window.showSRSSection = function() {
+                                originalShowSRSSection();
+                                document.getElementById('pandoc-warning').style.display = 'block';
+                            };
+                        }
+                    }
+                })
+                .catch(error => console.error('Error checking dependencies:', error));
+        }
+    </script>
+</body>
+</html>

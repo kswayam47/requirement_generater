@@ -1,0 +1,19 @@
+google-generativeai==0.3.2
+python-dotenv==1.0.1
+sentence-transformers==2.5.1
+numpy==1.26.4
+fastapi
+uvicorn
+websockets
+requests
+python-docx
+pandas
+jira
+python-multipart
+xlsxwriter
+markdown2==2.4.10
+# OCR and text extraction dependencies
+Pillow
+pytesseract
+PyPDF2
+beautifulsoup4
